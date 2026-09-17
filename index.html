@@ -77,10 +77,14 @@
     /* subtle glow for CTA */
     .cta-glow {
       box-shadow: 0 0 12px rgba(43, 82, 120, 0.7);
-      transition: box-shadow 0.2s;
+      transition: box-shadow 0.2s, transform 0.1s;
     }
     .cta-glow:hover {
       box-shadow: 0 0 20px rgba(43, 82, 120, 1);
+      transform: scale(1.02);
+    }
+    .cta-glow:active {
+      transform: scale(0.98);
     }
 
     /* Telegram header avatar */
@@ -125,15 +129,62 @@
     .agg-card:hover {
       background: #1c2c3c;
     }
+
+    /* ===== MODAL STYLES ===== */
+    .modal-backdrop {
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-card {
+      background: linear-gradient(145deg, #17212b 0%, #0f1a24 100%);
+      border: 1px solid #2b5278;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(43, 82, 120, 0.3);
+      animation: modalSlideIn 0.25s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-benefit {
+      background: rgba(43, 82, 120, 0.15);
+      border: 1px solid rgba(43, 82, 120, 0.3);
+      border-radius: 12px;
+    }
+
+    /* disabled pay button style */
+    .pay-option {
+      background: #101921;
+      border: 1px solid #1e2a36;
+      opacity: 0.7;
+      cursor: not-allowed;
+      transition: all 0.2s;
+    }
+    .pay-option:hover {
+      opacity: 0.85;
+    }
+
+    /* hide modal by default */
+    .modal-hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
 
   <!-- Telegram-style header -->
   <header class="bg-[#17212b] border-b border-[#101921] px-4 py-3 flex items-center gap-3 shrink-0 shadow-md">
-    <!-- back arrow decorative -->
     <div class="text-[#7d8b99] text-xl">←</div>
-    <!-- Avatar / Logo -->
     <div class="tg-avatar w-10 h-10 text-lg shadow-inner">₿</div>
     <div class="flex-1 min-w-0">
       <div class="flex items-center gap-1">
@@ -149,7 +200,6 @@
         <span>12,342 members</span>
       </div>
     </div>
-    <!-- menu dots -->
     <div class="text-[#7d8b99] text-2xl leading-none">⋮</div>
   </header>
 
@@ -157,14 +207,12 @@
   <main class="flex-1 overflow-y-auto px-3 py-4 space-y-4 chat-scroll">
     <div class="feed-container space-y-4">
 
-      <!-- Date chip -->
       <div class="flex justify-center">
         <span class="date-chip">Today · Live aggregation</span>
       </div>
 
       <!-- Aggregated Signal Card 1 (BLURRED) -->
       <div class="feed-item agg-card p-4 telegram-shadow relative">
-        <!-- Card header with source -->
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="badge-agg">⚡ AI SIGNAL</span>
@@ -172,9 +220,7 @@
           </div>
           <span class="text-[10px] text-[#5f7389]">just now</span>
         </div>
-        <!-- Blurred content wrapper with lock overlay -->
         <div class="relative">
-          <!-- Actual blurred signal content -->
           <div class="blurred-signal">
             <div class="flex items-center justify-between mb-2">
               <span class="font-bold text-lg">BTC/USDT</span>
@@ -192,15 +238,14 @@
               <span>Algo score: A+</span>
             </div>
           </div>
-          <!-- Lock overlay (sits on top, blurry content visible but obscured) -->
           <div class="absolute inset-0 lock-overlay rounded-xl flex flex-col items-center justify-center p-4 text-center">
             <span class="text-2xl mb-1">🔒</span>
             <p class="text-sm font-semibold text-white">Premium Signal</p>
             <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock this AI signal</p>
-            <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" 
+            <button onclick="openModal()" 
                class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
               Activate Free Account →
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -234,15 +279,15 @@
             <span class="text-2xl mb-1">🔒</span>
             <p class="text-sm font-semibold text-white">Trend Preview Locked</p>
             <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock this trend analysis</p>
-            <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" 
+            <button onclick="openModal()" 
                class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
               Activate Free Account →
-            </a>
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Unlocked example (left visible to show value) -->
+      <!-- Unlocked example -->
       <div class="feed-item agg-card p-4 telegram-shadow">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
@@ -291,10 +336,10 @@
             <span class="text-2xl mb-1">🔒</span>
             <p class="text-sm font-semibold text-white">Forecast Locked</p>
             <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock AI forecast</p>
-            <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" 
+            <button onclick="openModal()" 
                class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
               Activate Free Account →
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -326,10 +371,10 @@
             <span class="text-2xl mb-1">🔒</span>
             <p class="text-sm font-semibold text-white">Signal Locked</p>
             <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock this signal</p>
-            <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" 
+            <button onclick="openModal()" 
                class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
               Activate Free Account →
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -358,15 +403,14 @@
             <span class="text-2xl mb-1">🔒</span>
             <p class="text-sm font-semibold text-white">Reversal Signal Locked</p>
             <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock</p>
-            <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" 
+            <button onclick="openModal()" 
                class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
               Activate Free Account →
-            </a>
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Bottom note / aggregate status -->
       <div class="flex justify-center pt-2 pb-6">
         <div class="text-xs text-[#5f7389] flex items-center gap-2">
           <span class="w-1.5 h-1.5 bg-[#4cd964] rounded-full animate-pulse"></span>
@@ -383,37 +427,206 @@
       <span>Message</span>
       <span class="text-xl">😊</span>
     </div>
-    <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" 
+    <button onclick="openModal()" 
        class="bg-[#2b5278] hover:bg-[#376a9e] rounded-full px-3 py-2 text-white text-sm font-semibold shadow-md cta-glow transition-all flex items-center gap-1 whitespace-nowrap">
       Sign up free →
-    </a>
+    </button>
   </footer>
 
-  <!-- Small interactive script to keep chat scroll position (optional) -->
+  <!-- ========== MODAL (Hidden by default) ========== -->
+  <div id="pitchModal" class="modal-hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+    <div class="modal-card max-w-md w-full p-6 relative">
+      <!-- Close button -->
+      <button onclick="closeModal()" 
+              class="absolute top-4 right-4 text-[#7d8b99] hover:text-white text-2xl leading-none transition-colors">
+        ×
+      </button>
+
+      <!-- Icon / Hero -->
+      <div class="text-center mb-5">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#2b5278] to-[#1b3b5c] mb-3 shadow-lg">
+          <span class="text-3xl">₿</span>
+        </div>
+        <h2 class="text-2xl font-bold text-white">Unlock Premium Access</h2>
+        <p class="text-sm text-[#8e9eae] mt-1">Once-in-a-lifetime free offer</p>
+      </div>
+
+      <!-- Offer comparison -->
+      <div class="space-y-3 mb-5">
+        <!-- Free option (recommended) -->
+        <div class="modal-benefit p-4 rounded-xl border-2 border-[#4cd964] relative">
+          <div class="absolute -top-2 left-4 bg-[#4cd964] text-[#0e1621] text-[10px] font-bold px-2 py-0.5 rounded-full">
+            RECOMMENDED
+          </div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-white">Activate Free Account</span>
+            <span class="text-lg font-bold text-[#4cd964]">$0</span>
+          </div>
+          <ul class="text-xs text-[#b0c4d9] space-y-1 mb-3">
+            <li class="flex items-center gap-2">✓ Unlock all AI signals instantly</li>
+            <li class="flex items-center gap-2">✓ Real-time trend aggregator access</li>
+            <li class="flex items-center gap-2">✓ Limited time — no credit card needed</li>
+          </ul>
+          <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" rel="noopener"
+             class="block w-full bg-[#2b5278] hover:bg-[#376a9e] text-white text-center text-sm font-semibold py-3 rounded-xl cta-glow transition-all">
+            Activate Free Account Now →
+          </a>
+        </div>
+
+        <!-- Paid option (less recommended) -->
+        <div class="pay-option p-4 rounded-xl">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-[#8e9eae]">Premium Subscription</span>
+            <span class="text-lg font-bold text-[#8e9eae]">$29.99<span class="text-xs">/mo</span></span>
+          </div>
+          <p class="text-xs text-[#5f7389] mb-3">
+            Standard pricing. Skip the free offer and pay monthly.
+          </p>
+          <button disabled 
+                  class="w-full bg-[#101921] border border-[#1e2a36] text-[#5f7389] text-sm font-semibold py-3 rounded-xl cursor-not-allowed">
+            Pay $29.99 / month
+          </button>
+        </div>
+      </div>
+
+      <!-- Urgency footer -->
+      <p class="text-center text-[11px] text-[#5f7389]">
+        ⏳ This free activation offer is available for a limited time only.<br>
+        We strongly recommend claiming it before it's gone.
+      </p>
+    </div>
+  </div>
+
+  <!-- ========== BYBIT AFFILIATE TRACKING CODE ========== -->
+  <!-- Bybit affiliate tracking: partner.bybit.com/b/GRAMVIDEOS -->
   <script>
+    // Bybit affiliate tracking code — ensures every outbound click to the partner link is tracked
     (function() {
-      // Scroll to show top of the feed (not bottom, because it's aggregator style)
-      // Actually we want to start at the top for the feed, but it's fine.
-      // We'll just set scroll to top to show the first card.
-      const main = document.querySelector('main');
-      if (main) {
-        main.scrollTop = 0; // show top content first
-      }
+      // Configuration
+      var AFFILIATE_URL = 'https://partner.bybit.com/b/GRAMVIDEOS';
 
-      // Add hover effect to lock overlay links to feel more interactive
-      const partnerLinks = document.querySelectorAll('a[href*="partner.bybit.com"]');
-      partnerLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-          // Just a visual feedback, no need to prevent default
-          link.style.transform = 'scale(0.98)';
-          setTimeout(() => link.style.transform = 'scale(1)', 150);
-        });
-      });
+      // Track outbound clicks to the affiliate link
+      document.addEventListener('click', function(e) {
+        var target = e.target.closest('a[href*="partner.bybit.com"]');
+        if (target) {
+          // Standard outbound link tracking
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'click', {
+              'event_category': 'outbound',
+              'event_label': 'Bybit Affiliate',
+              'transport_type': 'beacon'
+            });
+          }
+          // Optional: You can add more analytics here (e.g., Facebook Pixel, custom)
+          console.log('[Affiliate] Outbound click to Bybit partner link tracked.');
+        }
+      }, false);
 
-      // Subtle: simulate live aggregation by updating the "just now" timestamp
-      // But not necessary, static is fine.
-      // Just for polish: animate the live dot already done via CSS.
+      // Expose a helper to open the affiliate link (for modal button fallback)
+      window.openAffiliateLink = function() {
+        window.open(AFFILIATE_URL, '_blank', 'noopener');
+      };
+
+      // Scroll to top of feed
+      var main = document.querySelector('main');
+      if (main) main.scrollTop = 0;
     })();
   </script>
+
+  <!-- ========== MODAL FUNCTIONALITY ========== -->
+  <script>
+    // Modal open/close functions
+    function openModal() {
+      var modal = document.getElementById('pitchModal');
+      if (modal) {
+        modal.classList.remove('modal-hidden');
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeModal() {
+      var modal = document.getElementById('pitchModal');
+      if (modal) {
+        modal.classList.add('modal-hidden');
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Close modal when clicking on the backdrop (outside the card)
+    document.addEventListener('click', function(e) {
+      var modal = document.getElementById('pitchModal');
+      if (modal && !modal.classList.contains('modal-hidden')) {
+        // If the click target is the backdrop itself (not the inner card)
+        if (e.target === modal) {
+          closeModal();
+        }
+      }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    // Handle all buttons that should open the modal — already inline onclick
+    // But also handle the footer "Sign up free" button
+    // (inline onclick already added)
+
+    // Ensure that when modal is open and user clicks the free activation button,
+    // the modal stays open in the new tab scenario — the link has target="_blank"
+    // so the modal remains on the original page. That's fine.
+
+    // Optional: Add a tiny delay to auto-focus on the free button inside the modal
+    // when it opens (for better UX)
+    var originalOpenModal = openModal;
+    openModal = function() {
+      originalOpenModal();
+      setTimeout(function() {
+        var freeBtn = document.querySelector('#pitchModal a[href*="partner.bybit.com"]');
+        if (freeBtn) freeBtn.focus();
+      }, 100);
+    };
+    window.openModal = openModal; // make sure global scope is updated
+
+    // Also override closeModal to maintain global
+    var originalCloseModal = closeModal;
+    closeModal = function() {
+      originalCloseModal();
+    };
+    window.closeModal = closeModal;
+  </script>
+
+  <!-- Additional small style for bubble tails (kept from previous) -->
+  <style>
+    .feed-item {
+      position: relative;
+    }
+    /* simulate telegram tail on the left side of feed items */
+    .feed-item::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      bottom: 8px;
+      width: 12px;
+      height: 12px;
+      background: #182533;
+      clip-path: polygon(100% 0, 0 100%, 100% 100%);
+      transform: rotate(180deg);
+      border-left: 3px solid #2b5278;
+    }
+    /* but we have border-left on feed-item, so adjust */
+    .feed-item {
+      border-left: 3px solid #2b5278;
+    }
+    /* avoid double tail on very small screens */
+    @media (max-width: 400px) {
+      .feed-item::before {
+        display: none;
+      }
+    }
+  </style>
 </body>
 </html>
