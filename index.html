@@ -50,6 +50,24 @@
       border-radius: 18px 18px 18px 4px;
       border-left: 3px solid #2b5278;
       transition: background 0.2s;
+      position: relative;
+    }
+    /* simulate telegram tail on the left side of feed items */
+    .feed-item::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      bottom: 8px;
+      width: 12px;
+      height: 12px;
+      background: #182533;
+      clip-path: polygon(100% 0, 0 100%, 100% 100%);
+      transform: rotate(180deg);
+    }
+    @media (max-width: 400px) {
+      .feed-item::before {
+        display: none;
+      }
     }
 
     /* Highlight badges */
@@ -467,10 +485,11 @@
             <li class="flex items-center gap-2">✓ Real-time trend aggregator access</li>
             <li class="flex items-center gap-2">✓ Limited time — no credit card needed</li>
           </ul>
-          <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" rel="noopener"
+          <!-- This button opens the affiliate link in a new tab -->
+          <button onclick="redirectToAffiliate()"
              class="block w-full bg-[#2b5278] hover:bg-[#376a9e] text-white text-center text-sm font-semibold py-3 rounded-xl cta-glow transition-all">
             Activate Free Account Now →
-          </a>
+          </button>
         </div>
 
         <!-- Paid option (less recommended) -->
@@ -498,7 +517,6 @@
   </div>
 
   <!-- ========== BYBIT AFFILIATE TRACKING CODE ========== -->
-  <!-- Bybit affiliate tracking: partner.bybit.com/b/GRAMVIDEOS -->
   <script>
     // Bybit affiliate tracking code — ensures every outbound click to the partner link is tracked
     (function() {
@@ -517,14 +535,26 @@
               'transport_type': 'beacon'
             });
           }
-          // Optional: You can add more analytics here (e.g., Facebook Pixel, custom)
           console.log('[Affiliate] Outbound click to Bybit partner link tracked.');
         }
       }, false);
 
-      // Expose a helper to open the affiliate link (for modal button fallback)
-      window.openAffiliateLink = function() {
+      // Function to open affiliate link (used by modal button)
+      window.redirectToAffiliate = function() {
+        // Track event (optional)
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'click', {
+            'event_category': 'outbound',
+            'event_label': 'Bybit Affiliate (modal)',
+            'transport_type': 'beacon'
+          });
+        }
+        console.log('[Affiliate] Redirecting to Bybit partner link from modal.');
+        // Open affiliate link in new tab
         window.open(AFFILIATE_URL, '_blank', 'noopener');
+        // Optionally close the modal after redirect (so it doesn't stay open behind)
+        // Uncomment the next line if you want the modal to close after redirect
+        // closeModal();
       };
 
       // Scroll to top of feed
@@ -571,62 +601,21 @@
       }
     });
 
-    // Handle all buttons that should open the modal — already inline onclick
-    // But also handle the footer "Sign up free" button
-    // (inline onclick already added)
-
-    // Ensure that when modal is open and user clicks the free activation button,
-    // the modal stays open in the new tab scenario — the link has target="_blank"
-    // so the modal remains on the original page. That's fine.
+    // Make sure openModal and closeModal are globally accessible
+    window.openModal = openModal;
+    window.closeModal = closeModal;
 
     // Optional: Add a tiny delay to auto-focus on the free button inside the modal
     // when it opens (for better UX)
     var originalOpenModal = openModal;
-    openModal = function() {
+    window.openModal = function() {
       originalOpenModal();
       setTimeout(function() {
-        var freeBtn = document.querySelector('#pitchModal a[href*="partner.bybit.com"]');
+        var freeBtn = document.querySelector('#pitchModal button[onclick*="redirectToAffiliate"]');
         if (freeBtn) freeBtn.focus();
       }, 100);
     };
-    window.openModal = openModal; // make sure global scope is updated
-
-    // Also override closeModal to maintain global
-    var originalCloseModal = closeModal;
-    closeModal = function() {
-      originalCloseModal();
-    };
-    window.closeModal = closeModal;
   </script>
 
-  <!-- Additional small style for bubble tails (kept from previous) -->
-  <style>
-    .feed-item {
-      position: relative;
-    }
-    /* simulate telegram tail on the left side of feed items */
-    .feed-item::before {
-      content: '';
-      position: absolute;
-      left: -6px;
-      bottom: 8px;
-      width: 12px;
-      height: 12px;
-      background: #182533;
-      clip-path: polygon(100% 0, 0 100%, 100% 100%);
-      transform: rotate(180deg);
-      border-left: 3px solid #2b5278;
-    }
-    /* but we have border-left on feed-item, so adjust */
-    .feed-item {
-      border-left: 3px solid #2b5278;
-    }
-    /* avoid double tail on very small screens */
-    @media (max-width: 400px) {
-      .feed-item::before {
-        display: none;
-      }
-    }
-  </style>
 </body>
 </html>
