@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CryptoSignal • AI Trading Trends</title>
+  <!-- Tailwind via CDN + custom Telegram-like theme -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom scrollbar and Telegram-inspired details */
+    body {
+      background: #0e1621; /* Telegram dark bg */
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    /* chat scroll */
+    .chat-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .chat-scroll::-webkit-scrollbar-track {
+      background: #1e2a36;
+    }
+    .chat-scroll::-webkit-scrollbar-thumb {
+      background: #4b5f73;
+      border-radius: 8px;
+    }
+    /* bubble tails (Telegram-like) */
+    .bubble-left {
+      position: relative;
+      background: #182533;
+      border-radius: 18px 18px 18px 4px;
+      color: #e9edf2;
+    }
+    .bubble-right {
+      position: relative;
+      background: #2b5278;
+      border-radius: 18px 18px 4px 18px;
+      color: white;
+    }
+    /* subtle shadows */
+    .telegram-shadow {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    /* badge for verified */
+    .verified-badge {
+      color: #64b5ef;
+      margin-left: 4px;
+      font-size: 0.9rem;
+    }
+    /* signal tag */
+    .signal-badge {
+      background: #0f2b42;
+      color: #7ab7ef;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 30px;
+      letter-spacing: 0.3px;
+      font-weight: 500;
+    }
+    /* profit colors */
+    .profit-positive {
+      color: #4cd964;
+      font-weight: 600;
+    }
+    .profit-negative {
+      color: #ff5e5e;
+      font-weight: 600;
+    }
+    /* date chip */
+    .date-chip {
+      background: #1e2a36;
+      color: #8e9eae;
+      font-size: 0.7rem;
+      padding: 4px 12px;
+      border-radius: 30px;
+    }
+    /* typing indicator (optional) */
+    .typing-dot {
+      animation: pulse 1.5s infinite;
+    }
+  </style>
+</head>
+<body class="text-white h-screen flex flex-col antialiased">
+
+  <!-- Telegram-style header -->
+  <header class="bg-[#17212b] border-b border-[#101921] px-4 py-3 flex items-center gap-3 shrink-0 telegram-shadow">
+    <!-- back arrow (decorative) -->
+    <div class="text-[#7d8b99] text-xl">←</div>
+    <!-- Avatar / Logo -->
+    <div class="bg-gradient-to-br from-[#2b5278] to-[#1b3b5c] rounded-full w-10 h-10 flex items-center justify-center text-lg font-semibold shadow-inner">
+      ₿
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-1">
+        <h1 class="font-semibold text-[16px] tracking-tight">CryptoSignal AI</h1>
+        <span class="verified-badge">✓</span>
+      </div>
+      <div class="flex items-center gap-2 text-xs text-[#7d8b99]">
+        <span class="flex items-center gap-1"><span class="w-2 h-2 bg-[#4cd964] rounded-full inline-block"></span>online</span>
+        <span>•</span>
+        <span>12,342 members</span>
+      </div>
+    </div>
+    <!-- menu dots -->
+    <div class="text-[#7d8b99] text-2xl leading-none">⋮</div>
+  </header>
+
+  <!-- Main chat area (scrollable) -->
+  <main class="flex-1 overflow-y-auto chat-scroll px-3 py-4 space-y-3" id="chatContainer">
+    <!-- Date chip -->
+    <div class="flex justify-center">
+      <span class="date-chip">Today</span>
+    </div>
+
+    <!-- Message 1: Automated signal (left) -->
+    <div class="flex justify-start">
+      <div class="max-w-[85%] bubble-left px-4 py-3 telegram-shadow">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs font-medium text-[#7ab7ef]">AI SIGNAL BOT</span>
+          <span class="signal-badge">⚡ ALGO</span>
+        </div>
+        <p class="text-sm leading-relaxed">
+          <span class="font-semibold">$BTC/USDT</span> · <span class="text-[#7ab7ef]">LONG</span><br>
+          Entry: <span class="font-mono">63,420.50</span><br>
+          Target 1: <span class="font-mono profit-positive">64,800</span> (2.1%)<br>
+          Target 2: <span class="font-mono profit-positive">66,200</span> (4.4%)<br>
+          Stop: <span class="font-mono profit-negative">62,150</span> (-2.0%)<br>
+          <span class="text-xs text-[#8e9eae] mt-1 block">Confidence: 89% | R/R 1:2.3</span>
+        </p>
+        <div class="flex justify-end mt-1">
+          <span class="text-[10px] text-[#5f7389]">09:47</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message 2: Trending trend (left) with mini chart suggestion -->
+    <div class="flex justify-start">
+      <div class="max-w-[85%] bubble-left px-4 py-3 telegram-shadow">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs font-medium text-[#7ab7ef]">TREND DETECTOR</span>
+          <span class="signal-badge">📈 MOMENTUM</span>
+        </div>
+        <p class="text-sm leading-relaxed">
+          <span class="font-semibold">$ETH/USDT</span> breaking above 3,450 resistance.<br>
+          Volume spike +42% in 1H. Algorithmic score: <span class="text-[#4cd964] font-semibold">A+</span><br>
+          Watch for continuation to 3,620 – 3,700.
+        </p>
+        <div class="flex justify-end mt-1">
+          <span class="text-[10px] text-[#5f7389]">09:52</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message 3: User (right) - hypothetical question / engagement -->
+    <div class="flex justify-end">
+      <div class="max-w-[85%] bubble-right px-4 py-3 telegram-shadow">
+        <p class="text-sm leading-relaxed">
+          🔥 Just entered BTC long at 63.4k. Thanks for the precise entry!
+        </p>
+        <div class="flex justify-end mt-1">
+          <span class="text-[10px] text-[#a0b8d0]">09:55</span>
+          <span class="text-[10px] text-[#a0b8d0] ml-1">✓✓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message 4: Bot reply (left) with profit update -->
+    <div class="flex justify-start">
+      <div class="max-w-[85%] bubble-left px-4 py-3 telegram-shadow">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs font-medium text-[#7ab7ef]">AI SIGNAL BOT</span>
+          <span class="signal-badge">⚡ ALGO</span>
+        </div>
+        <p class="text-sm leading-relaxed">
+          Great! 🚀 Our algorithm just adjusted TP1 to <span class="font-mono">64,950</span> based on order flow.<br>
+          Trailing stop suggested at <span class="font-mono">63,800</span>.<br>
+          <span class="text-[#4cd964]">+1.2% unrealized</span> since entry.
+        </p>
+        <div class="flex justify-end mt-1">
+          <span class="text-[10px] text-[#5f7389]">10:02</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message 5: Trend alert with card-like appearance -->
+    <div class="flex justify-start">
+      <div class="max-w-[85%] bubble-left px-4 py-3 telegram-shadow">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-medium text-[#7ab7ef]">TREND ALERT</span>
+          <span class="signal-badge">🧠 AI FORECAST</span>
+        </div>
+        <div class="bg-[#0f1a24] rounded-xl p-3 mb-1 border border-[#1e2f3f]">
+          <div class="flex justify-between items-center">
+            <span class="font-semibold text-sm">$SOL/USDT</span>
+            <span class="text-xs bg-[#1e3a5a] px-2 py-0.5 rounded-full">+8.4% 24h</span>
+          </div>
+          <p class="text-xs text-[#b0c4d9] mt-1">Algorithmic breakout confirmed. Next resistance 178.40.</p>
+        </div>
+        <p class="text-sm">Our models show <span class="font-semibold text-[#7ab7ef]">82% probability</span> of testing 180 within 48h.</p>
+        <div class="flex justify-end mt-1">
+          <span class="text-[10px] text-[#5f7389]">10:18</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message 6: User right, engagement -->
+    <div class="flex justify-end">
+      <div class="max-w-[85%] bubble-right px-4 py-3 telegram-shadow">
+        <p class="text-sm leading-relaxed">
+          SOL signal printing 🔥 Already up 3% from your call. Keep them coming!
+        </p>
+        <div class="flex justify-end mt-1">
+          <span class="text-[10px] text-[#a0b8d0]">10:21</span>
+          <span class="text-[10px] text-[#a0b8d0] ml-1">✓✓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message 7: Algorithmic insight (left) -->
+    <div class="flex justify-start">
+      <div class="max-w-[85%] bubble-left px-4 py-3 telegram-shadow">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs font-medium text-[#7ab7ef]">ALGO INSIGHT</span>
+          <span class="signal-badge">📊 VOLUME</span>
+        </div>
+        <p class="text-sm leading-relaxed">
+          Unusual options activity detected on <span class="font-semibold">$LINK</span> – large call sweeps exp. next Friday.<br>
+          Implied volatility +18%. Historical pattern suggests 5-7% move.
+        </p>
+        <div class="flex justify-end mt-1">
+          <span class="text-[10px] text-[#5f7389]">10:32</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Typing indicator / subtle live feel -->
+    <div class="flex justify-start">
+      <div class="bubble-left px-4 py-2 telegram-shadow flex items-center gap-1">
+        <span class="text-xs text-[#8e9eae]">AI is typing</span>
+        <span class="flex gap-0.5">
+          <span class="w-1.5 h-1.5 bg-[#7ab7ef] rounded-full typing-dot"></span>
+          <span class="w-1.5 h-1.5 bg-[#7ab7ef] rounded-full typing-dot" style="animation-delay:0.2s"></span>
+          <span class="w-1.5 h-1.5 bg-[#7ab7ef] rounded-full typing-dot" style="animation-delay:0.4s"></span>
+        </span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Telegram-like input bar (static, not functional but looks real) -->
+  <footer class="bg-[#17212b] border-t border-[#101921] px-3 py-2 flex items-center gap-2 shrink-0">
+    <button class="text-[#7d8b99] text-2xl leading-none p-1">📎</button>
+    <div class="flex-1 bg-[#0e1621] rounded-full px-4 py-2 text-sm text-[#7d8b99] flex items-center justify-between">
+      <span>Message</span>
+      <span class="text-xl">😊</span>
+    </div>
+    <button class="bg-[#2b5278] rounded-full w-9 h-9 flex items-center justify-center text-white text-lg shadow-md">
+      ➤
+    </button>
+  </footer>
+
+  <!-- Tiny script to simulate auto-scroll to bottom (chat feel) -->
+  <script>
+    (function() {
+      // Scroll to bottom of chat on load – like a real chat
+      const chat = document.getElementById('chatContainer');
+      if (chat) {
+        chat.scrollTop = chat.scrollHeight;
+      }
+
+      // Optional: make the "typing" indicator subtle lively (no extra dependencies)
+      // Just a tiny detail to feel alive – already done via CSS animation
+      // Also we could add a fake incoming signal after a few seconds, but static is fine.
+      // For demonstration, we'll just keep it static but with elegant details.
+
+      // small interactive touch: click on input bar shows a subtle effect (not needed but fun)
+      const fakeInput = document.querySelector('footer .flex-1');
+      if (fakeInput) {
+        fakeInput.addEventListener('click', () => {
+          // just a visual pulse, but we don't have real input
+          fakeInput.classList.add('ring-1', 'ring-[#2b5278]');
+          setTimeout(() => fakeInput.classList.remove('ring-1', 'ring-[#2b5278]'), 200);
+        });
+      }
+    })();
+  </script>
+
+  <!-- Additional small style for bubble tails (more authentic) -->
+  <style>
+    /* Tail simulation via pseudo elements – simpler: we already used border-radius.
+       But we can add a tiny triangle to bubble-left and bubble-right */
+    .bubble-left::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      bottom: 8px;
+      width: 12px;
+      height: 12px;
+      background: #182533;
+      clip-path: polygon(100% 0, 0 100%, 100% 100%);
+      transform: rotate(180deg);
+    }
+    .bubble-right::after {
+      content: '';
+      position: absolute;
+      right: -6px;
+      bottom: 8px;
+      width: 12px;
+      height: 12px;
+      background: #2b5278;
+      clip-path: polygon(100% 0, 0 100%, 100% 100%);
+      transform: rotate(180deg);
+    }
+    /* but we must ensure relative positioning is set */
+    .bubble-left, .bubble-right {
+      position: relative;
+    }
+    /* Adjust tail position for bubble-left/right */
+    .bubble-left::before {
+      left: -5px;
+      bottom: 8px;
+      background: #182533;
+    }
+    .bubble-right::after {
+      right: -5px;
+      bottom: 8px;
+      background: #2b5278;
+    }
+    /* avoid overflow issues */
+    .chat-scroll {
+      scroll-behavior: smooth;
+    }
+  </style>
+
+<!-- Default Statcounter code for Telegram
+http://telegam.1biz.online/ -->
+<script type="text/javascript">
+var sc_project=13355495; 
+var sc_invisible=1; 
+var sc_security="b8ba392c"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="Web Analytics
+Made Easy - Statcounter" href="https://statcounter.com/"
+target="_blank"><img class="statcounter"
+src="https://c.statcounter.com/13355495/0/b8ba392c/1/"
+alt="Web Analytics Made Easy - Statcounter"
+referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+<!-- End of Statcounter Code -->
+
+</body>
+</html>
