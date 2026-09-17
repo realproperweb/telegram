@@ -18,11 +18,7 @@
     ::-webkit-scrollbar-track { background: #1e2a36; }
     ::-webkit-scrollbar-thumb { background: #4b5f73; border-radius: 8px; }
 
-    .blurred-signal {
-      filter: blur(6px);
-      user-select: none;
-      pointer-events: none;
-    }
+    .blurred-signal { filter: blur(6px); user-select: none; pointer-events: none; }
     .lock-overlay {
       background: linear-gradient(135deg, rgba(14, 22, 33, 0.85) 0%, rgba(14, 22, 33, 0.95) 100%);
       backdrop-filter: blur(4px);
@@ -32,7 +28,6 @@
       background: #182533;
       border-radius: 18px 18px 18px 4px;
       border-left: 3px solid #2b5278;
-      transition: background 0.2s;
       position: relative;
     }
     .feed-item::before {
@@ -46,18 +41,11 @@
       clip-path: polygon(100% 0, 0 100%, 100% 100%);
       transform: rotate(180deg);
     }
-    @media (max-width: 400px) {
-      .feed-item::before { display: none; }
-    }
+    @media (max-width: 400px) { .feed-item::before { display: none; } }
     .badge-agg {
-      background: #0f2b42;
-      color: #7ab7ef;
-      font-size: 0.65rem;
-      padding: 2px 8px;
-      border-radius: 30px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
+      background: #0f2b42; color: #7ab7ef; font-size: 0.65rem;
+      padding: 2px 8px; border-radius: 30px; font-weight: 500;
+      letter-spacing: 0.3px; text-transform: uppercase;
     }
     .trend-up { color: #4cd964; font-weight: 600; }
     .trend-down { color: #ff5e5e; font-weight: 600; }
@@ -65,44 +53,31 @@
       box-shadow: 0 0 12px rgba(43, 82, 120, 0.7);
       transition: box-shadow 0.2s, transform 0.1s;
     }
-    .cta-glow:hover {
-      box-shadow: 0 0 20px rgba(43, 82, 120, 1);
-      transform: scale(1.02);
-    }
+    .cta-glow:hover { box-shadow: 0 0 20px rgba(43, 82, 120, 1); transform: scale(1.02); }
     .cta-glow:active { transform: scale(0.98); }
     .tg-avatar {
       background: linear-gradient(135deg, #2b5278, #1b3b5c);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-weight: 600;
     }
     .date-chip {
-      background: #1e2a36;
-      color: #8e9eae;
-      font-size: 0.7rem;
-      padding: 4px 12px;
-      border-radius: 30px;
+      background: #1e2a36; color: #8e9eae; font-size: 0.7rem;
+      padding: 4px 12px; border-radius: 30px;
     }
     .feed-container { max-width: 600px; margin: 0 auto; width: 100%; }
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
     .live-dot { animation: pulse-dot 1.8s infinite; }
     .agg-card { transition: transform 0.15s ease, background 0.2s; }
     .agg-card:hover { background: #1c2c3c; }
 
-    /* MODAL STYLES */
-    .modal-backdrop {
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(4px);
-    }
+    /* MODAL — hidden by default. Only removed by JS click handler. */
+    #pitchModal { display: none; }
+    #pitchModal.is-open { display: flex; }
+
+    .modal-backdrop { background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); }
     .modal-card {
       background: linear-gradient(145deg, #17212b 0%, #0f1a24 100%);
-      border: 1px solid #2b5278;
-      border-radius: 24px;
+      border: 1px solid #2b5278; border-radius: 24px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(43, 82, 120, 0.3);
       animation: modalSlideIn 0.25s ease-out;
     }
@@ -115,14 +90,8 @@
       border: 1px solid rgba(43, 82, 120, 0.3);
       border-radius: 12px;
     }
-    .pay-option {
-      background: #101921;
-      border: 1px solid #1e2a36;
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
+    .pay-option { background: #101921; border: 1px solid #1e2a36; opacity: 0.7; cursor: not-allowed; }
     .pay-option:hover { opacity: 0.85; }
-    .modal-hidden { display: none; }
   </style>
 </head>
 <body>
@@ -148,16 +117,16 @@
     <div class="text-[#7d8b99] text-2xl leading-none">⋮</div>
   </header>
 
-  <!-- Main content -->
-  <main class="flex-1 overflow-y-auto px-3 py-4 space-y-4 chat-scroll">
+  <!-- Main feed -->
+  <main class="flex-1 overflow-y-auto px-3 py-4 space-y-4">
     <div class="feed-container space-y-4">
 
       <div class="flex justify-center">
         <span class="date-chip">Today · Live aggregation</span>
       </div>
 
-      <!-- Card 1 (BLURRED) -->
-      <div class="feed-item agg-card p-4 telegram-shadow relative">
+      <!-- Card 1 -->
+      <div class="feed-item agg-card p-4 relative">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="badge-agg">⚡ AI SIGNAL</span>
@@ -178,16 +147,14 @@
               <div><span class="text-[#8e9eae]">Stop:</span> <span class="font-mono trend-down">62,150</span></div>
             </div>
             <div class="flex items-center gap-3 text-xs text-[#8e9eae]">
-              <span>Confidence: 89%</span>
-              <span>R/R 1:2.3</span>
-              <span>Algo score: A+</span>
+              <span>Confidence: 89%</span><span>R/R 1:2.3</span><span>Algo score: A+</span>
             </div>
           </div>
           <div class="absolute inset-0 lock-overlay rounded-xl flex flex-col items-center justify-center p-4 text-center">
             <span class="text-2xl mb-1">🔒</span>
             <p class="text-sm font-semibold text-white">Premium Signal</p>
             <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock this AI signal</p>
-            <button onclick="openModal()" 
+            <button type="button" data-open-modal
                class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
               Activate Free Account →
             </button>
@@ -195,8 +162,8 @@
         </div>
       </div>
 
-      <!-- Card 2 (BLURRED) -->
-      <div class="feed-item agg-card p-4 telegram-shadow relative">
+      <!-- Card 2 -->
+      <div class="feed-item agg-card p-4 relative">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="badge-agg">📈 TREND AGGREGATOR</span>
@@ -224,7 +191,7 @@
             <span class="text-2xl mb-1">🔒</span>
             <p class="text-sm font-semibold text-white">Trend Preview Locked</p>
             <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock this trend analysis</p>
-            <button onclick="openModal()" 
+            <button type="button" data-open-modal
                class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
               Activate Free Account →
             </button>
@@ -233,7 +200,7 @@
       </div>
 
       <!-- Unlocked example -->
-      <div class="feed-item agg-card p-4 telegram-shadow">
+      <div class="feed-item agg-card p-4">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="badge-agg">📊 MARKET PULSE</span>
@@ -254,8 +221,8 @@
         </div>
       </div>
 
-      <!-- Card 3 (BLURRED) -->
-      <div class="feed-item agg-card p-4 telegram-shadow relative">
+      <!-- Card 3 -->
+      <div class="feed-item agg-card p-4 relative">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="badge-agg">🧠 AI FORECAST</span>
@@ -273,15 +240,13 @@
               Unusual options activity – large call sweeps exp. next Friday.<br>
               Implied volatility +18%. Historical pattern suggests 5-7% move.
             </p>
-            <div class="mt-2 text-xs text-[#8e9eae]">
-              Key levels: 17.20 / 18.40 / 19.10
-            </div>
+            <div class="mt-2 text-xs text-[#8e9eae]">Key levels: 17.20 / 18.40 / 19.10</div>
           </div>
           <div class="absolute inset-0 lock-overlay rounded-xl flex flex-col items-center justify-center p-4 text-center">
             <span class="text-2xl mb-1">🔒</span>
             <p class="text-sm font-semibold text-white">Forecast Locked</p>
             <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock AI forecast</p>
-            <button onclick="openModal()" 
+            <button type="button" data-open-modal
                class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
               Activate Free Account →
             </button>
@@ -289,8 +254,8 @@
         </div>
       </div>
 
-      <!-- Card 4 (BLURRED) -->
-      <div class="feed-item agg-card p-4 telegram-shadow relative">
+      <!-- Card 4 -->
+      <div class="feed-item agg-card p-4 relative">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="badge-agg">⚡ ALGO SIGNAL</span>
@@ -316,7 +281,7 @@
             <span class="text-2xl mb-1">🔒</span>
             <p class="text-sm font-semibold text-white">Signal Locked</p>
             <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock this signal</p>
-            <button onclick="openModal()" 
+            <button type="button" data-open-modal
                class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
               Activate Free Account →
             </button>
@@ -324,8 +289,8 @@
         </div>
       </div>
 
-      <!-- Card 5 (BLURRED) -->
-      <div class="feed-item agg-card p-4 telegram-shadow relative">
+      <!-- Card 5 -->
+      <div class="feed-item agg-card p-4 relative">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <span class="badge-agg">📉 TREND REVERSAL</span>
@@ -348,7 +313,7 @@
             <span class="text-2xl mb-1">🔒</span>
             <p class="text-sm font-semibold text-white">Reversal Signal Locked</p>
             <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock</p>
-            <button onclick="openModal()" 
+            <button type="button" data-open-modal
                class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
               Activate Free Account →
             </button>
@@ -372,16 +337,16 @@
       <span>Message</span>
       <span class="text-xl">😊</span>
     </div>
-    <button onclick="openModal()" 
+    <button type="button" data-open-modal
        class="bg-[#2b5278] hover:bg-[#376a9e] rounded-full px-3 py-2 text-white text-sm font-semibold shadow-md cta-glow transition-all flex items-center gap-1 whitespace-nowrap">
       Sign up free →
     </button>
   </footer>
 
-  <!-- MODAL (Hidden by default, only opened via button clicks) -->
-  <div id="pitchModal" class="modal-hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+  <!-- MODAL — Hidden by default. Only shown when a [data-open-modal] button is clicked. -->
+  <div id="pitchModal" class="fixed inset-0 z-50 items-center justify-center p-4 modal-backdrop">
     <div class="modal-card max-w-md w-full p-6 relative">
-      <button onclick="closeModal()" 
+      <button type="button" data-close-modal
               class="absolute top-4 right-4 text-[#7d8b99] hover:text-white text-2xl leading-none transition-colors">
         ×
       </button>
@@ -408,10 +373,10 @@
             <li class="flex items-center gap-2">✓ Real-time trend aggregator access</li>
             <li class="flex items-center gap-2">✓ Limited time — no credit card needed</li>
           </ul>
-          <button onclick="redirectToAffiliate()"
+          <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" rel="noopener"
              class="block w-full bg-[#2b5278] hover:bg-[#376a9e] text-white text-center text-sm font-semibold py-3 rounded-xl cta-glow transition-all">
             Activate Free Account Now →
-          </button>
+          </a>
         </div>
 
         <div class="pay-option p-4 rounded-xl">
@@ -419,11 +384,8 @@
             <span class="text-sm font-semibold text-[#8e9eae]">Premium Subscription</span>
             <span class="text-lg font-bold text-[#8e9eae]">$29.99<span class="text-xs">/mo</span></span>
           </div>
-          <p class="text-xs text-[#5f7389] mb-3">
-            Standard pricing. Skip the free offer and pay monthly.
-          </p>
-          <button disabled 
-                  class="w-full bg-[#101921] border border-[#1e2a36] text-[#5f7389] text-sm font-semibold py-3 rounded-xl cursor-not-allowed">
+          <p class="text-xs text-[#5f7389] mb-3">Standard pricing. Skip the free offer and pay monthly.</p>
+          <button disabled class="w-full bg-[#101921] border border-[#1e2a36] text-[#5f7389] text-sm font-semibold py-3 rounded-xl cursor-not-allowed">
             Pay $29.99 / month
           </button>
         </div>
@@ -436,86 +398,67 @@
     </div>
   </div>
 
-  <!-- TRACKING + MODAL LOGIC -->
+  <!-- AFFILIATE TRACKING + MODAL CLICK HANDLER -->
   <script>
-    // ===== CONFIG =====
+    // ===== AFFILIATE TRACKING =====
     var AFFILIATE_URL = 'https://partner.bybit.com/b/GRAMVIDEOS';
 
-    // ===== MODAL FUNCTIONS =====
-    function openModal() {
-      var modal = document.getElementById('pitchModal');
-      if (modal) {
-        modal.classList.remove('modal-hidden');
-        document.body.style.overflow = 'hidden';
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('a[href*="partner.bybit.com"]');
+      if (link) {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'click', {
+            'event_category': 'outbound',
+            'event_label': 'Bybit Affiliate',
+            'transport_type': 'beacon'
+          });
+        }
+        console.log('[Affiliate] Outbound click to Bybit partner link tracked.');
       }
-    }
+    }, false);
 
-    function closeModal() {
-      var modal = document.getElementById('pitchModal');
-      if (modal) {
-        modal.classList.add('modal-hidden');
-        document.body.style.overflow = '';
-      }
-    }
-
-    function redirectToAffiliate() {
-      // Track the click
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'click', {
-          'event_category': 'outbound',
-          'event_label': 'Bybit Affiliate (modal)',
-          'transport_type': 'beacon'
-        });
-      }
-      console.log('[Affiliate] Redirecting to Bybit partner link from modal.');
-      // Open affiliate link in new tab
-      window.open(AFFILIATE_URL, '_blank', 'noopener');
-    }
-
-    // ===== MODAL EVENT LISTENERS (only triggered by clicks) =====
+    // ===== MODAL — opens ONLY when a button with [data-open-modal] is clicked =====
     document.addEventListener('DOMContentLoaded', function() {
-      // Close modal when clicking on the backdrop (outside the card)
       var modal = document.getElementById('pitchModal');
-      if (modal) {
-        modal.addEventListener('click', function(e) {
-          if (e.target === modal) {
-            closeModal();
-          }
-        });
-      }
 
-      // Close modal on Escape key
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-          closeModal();
+      // Open modal — only fired by explicit button clicks
+      document.querySelectorAll('[data-open-modal]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          modal.classList.add('is-open');
+          document.body.style.overflow = 'hidden';
+        });
+      });
+
+      // Close modal — X button
+      document.querySelectorAll('[data-close-modal]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          modal.classList.remove('is-open');
+          document.body.style.overflow = '';
+        });
+      });
+
+      // Close modal — click on backdrop
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.classList.remove('is-open');
+          document.body.style.overflow = '';
         }
       });
 
-      // ===== AFFILIATE OUTBOUND LINK TRACKING =====
-      // (for any direct <a> links to partner.bybit.com, if added later)
-      document.addEventListener('click', function(e) {
-        var target = e.target.closest('a[href*="partner.bybit.com"]');
-        if (target) {
-          if (typeof gtag !== 'undefined') {
-            gtag('event', 'click', {
-              'event_category': 'outbound',
-              'event_label': 'Bybit Affiliate',
-              'transport_type': 'beacon'
-            });
-          }
-          console.log('[Affiliate] Outbound click to Bybit partner link tracked.');
+      // Close modal — Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+          modal.classList.remove('is-open');
+          document.body.style.overflow = '';
         }
-      }, false);
+      });
 
-      // Scroll main feed to top on load (optional)
-      var main = document.querySelector('main');
-      if (main) main.scrollTop = 0;
+      // NOTE: No code anywhere here opens the modal automatically.
+      // The modal starts with CSS `display: none` and only becomes visible
+      // when `is-open` class is added by the button click listener above.
     });
-
-    // Expose functions globally so inline onclick works
-    window.openModal = openModal;
-    window.closeModal = closeModal;
-    window.redirectToAffiliate = redirectToAffiliate;
   </script>
 
 </body>
