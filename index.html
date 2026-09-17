@@ -2,69 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CryptoSignal • AI Trading Trends</title>
-  <!-- Tailwind via CDN + custom Telegram-like theme -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CryptoSignal Aggregator · AI Trends</title>
+  <!-- Tailwind via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Custom scrollbar and Telegram-inspired details */
+    /* Telegram-inspired dark theme + aggregator vibe */
     body {
-      background: #0e1621; /* Telegram dark bg */
+      background: #0e1621;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    /* chat scroll */
-    .chat-scroll::-webkit-scrollbar {
+
+    /* custom scrollbar */
+    ::-webkit-scrollbar {
       width: 4px;
     }
-    .chat-scroll::-webkit-scrollbar-track {
+    ::-webkit-scrollbar-track {
       background: #1e2a36;
     }
-    .chat-scroll::-webkit-scrollbar-thumb {
+    ::-webkit-scrollbar-thumb {
       background: #4b5f73;
       border-radius: 8px;
     }
-    /* bubble tails (Telegram-like) */
-    .bubble-left {
-      position: relative;
+
+    /* Blur effect for locked signals */
+    .blurred-signal {
+      filter: blur(6px);
+      user-select: none;
+      pointer-events: none;
+      transition: filter 0.2s ease;
+    }
+
+    /* Gradient overlay for locked cards */
+    .lock-overlay {
+      background: linear-gradient(135deg, rgba(14, 22, 33, 0.85) 0%, rgba(14, 22, 33, 0.95) 100%);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(43, 82, 120, 0.3);
+    }
+
+    /* Telegram-style message bubble (for aggregated feed) */
+    .feed-item {
       background: #182533;
       border-radius: 18px 18px 18px 4px;
-      color: #e9edf2;
+      border-left: 3px solid #2b5278;
+      transition: background 0.2s;
     }
-    .bubble-right {
-      position: relative;
-      background: #2b5278;
-      border-radius: 18px 18px 4px 18px;
-      color: white;
-    }
-    /* subtle shadows */
-    .telegram-shadow {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
-    /* badge for verified */
-    .verified-badge {
-      color: #64b5ef;
-      margin-left: 4px;
-      font-size: 0.9rem;
-    }
-    /* signal tag */
-    .signal-badge {
+
+    /* Highlight badges */
+    .badge-agg {
       background: #0f2b42;
       color: #7ab7ef;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       padding: 2px 8px;
       border-radius: 30px;
-      letter-spacing: 0.3px;
       font-weight: 500;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
     }
-    /* profit colors */
-    .profit-positive {
+
+    .trend-up {
       color: #4cd964;
       font-weight: 600;
     }
-    .profit-negative {
+
+    .trend-down {
       color: #ff5e5e;
       font-weight: 600;
     }
+
+    /* subtle glow for CTA */
+    .cta-glow {
+      box-shadow: 0 0 12px rgba(43, 82, 120, 0.7);
+      transition: box-shadow 0.2s;
+    }
+    .cta-glow:hover {
+      box-shadow: 0 0 20px rgba(43, 82, 120, 1);
+    }
+
+    /* Telegram header avatar */
+    .tg-avatar {
+      background: linear-gradient(135deg, #2b5278, #1b3b5c);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
     /* date chip */
     .date-chip {
       background: #1e2a36;
@@ -73,29 +101,50 @@
       padding: 4px 12px;
       border-radius: 30px;
     }
-    /* typing indicator (optional) */
-    .typing-dot {
-      animation: pulse 1.5s infinite;
+
+    /* responsive max width for feed */
+    .feed-container {
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* subtle animation for live indicator */
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .live-dot {
+      animation: pulse-dot 1.8s infinite;
+    }
+
+    /* card hover effect */
+    .agg-card {
+      transition: transform 0.15s ease, background 0.2s;
+    }
+    .agg-card:hover {
+      background: #1c2c3c;
     }
   </style>
 </head>
-<body class="text-white h-screen flex flex-col antialiased">
+<body>
 
   <!-- Telegram-style header -->
-  <header class="bg-[#17212b] border-b border-[#101921] px-4 py-3 flex items-center gap-3 shrink-0 telegram-shadow">
-    <!-- back arrow (decorative) -->
+  <header class="bg-[#17212b] border-b border-[#101921] px-4 py-3 flex items-center gap-3 shrink-0 shadow-md">
+    <!-- back arrow decorative -->
     <div class="text-[#7d8b99] text-xl">←</div>
     <!-- Avatar / Logo -->
-    <div class="bg-gradient-to-br from-[#2b5278] to-[#1b3b5c] rounded-full w-10 h-10 flex items-center justify-center text-lg font-semibold shadow-inner">
-      ₿
-    </div>
+    <div class="tg-avatar w-10 h-10 text-lg shadow-inner">₿</div>
     <div class="flex-1 min-w-0">
       <div class="flex items-center gap-1">
-        <h1 class="font-semibold text-[16px] tracking-tight">CryptoSignal AI</h1>
-        <span class="verified-badge">✓</span>
+        <h1 class="font-semibold text-[16px] tracking-tight">CryptoSignal Aggregator</h1>
+        <span class="text-[#64b5ef] text-sm ml-0.5">✓</span>
       </div>
       <div class="flex items-center gap-2 text-xs text-[#7d8b99]">
-        <span class="flex items-center gap-1"><span class="w-2 h-2 bg-[#4cd964] rounded-full inline-block"></span>online</span>
+        <span class="flex items-center gap-1">
+          <span class="w-2 h-2 bg-[#4cd964] rounded-full inline-block live-dot"></span>
+          aggregating live
+        </span>
         <span>•</span>
         <span>12,342 members</span>
       </div>
@@ -104,249 +153,267 @@
     <div class="text-[#7d8b99] text-2xl leading-none">⋮</div>
   </header>
 
-  <!-- Main chat area (scrollable) -->
-  <main class="flex-1 overflow-y-auto chat-scroll px-3 py-4 space-y-3" id="chatContainer">
-    <!-- Date chip -->
-    <div class="flex justify-center">
-      <span class="date-chip">Today</span>
-    </div>
+  <!-- Main content: Aggregated feed with locked signals -->
+  <main class="flex-1 overflow-y-auto px-3 py-4 space-y-4 chat-scroll">
+    <div class="feed-container space-y-4">
 
-    <!-- Message 1: Automated signal (left) -->
-    <div class="flex justify-start">
-      <div class="max-w-[85%] bubble-left px-4 py-3 telegram-shadow">
-        <div class="flex items-center gap-2 mb-1">
-          <span class="text-xs font-medium text-[#7ab7ef]">AI SIGNAL BOT</span>
-          <span class="signal-badge">⚡ ALGO</span>
-        </div>
-        <p class="text-sm leading-relaxed">
-          <span class="font-semibold">$BTC/USDT</span> · <span class="text-[#7ab7ef]">LONG</span><br>
-          Entry: <span class="font-mono">63,420.50</span><br>
-          Target 1: <span class="font-mono profit-positive">64,800</span> (2.1%)<br>
-          Target 2: <span class="font-mono profit-positive">66,200</span> (4.4%)<br>
-          Stop: <span class="font-mono profit-negative">62,150</span> (-2.0%)<br>
-          <span class="text-xs text-[#8e9eae] mt-1 block">Confidence: 89% | R/R 1:2.3</span>
-        </p>
-        <div class="flex justify-end mt-1">
-          <span class="text-[10px] text-[#5f7389]">09:47</span>
-        </div>
+      <!-- Date chip -->
+      <div class="flex justify-center">
+        <span class="date-chip">Today · Live aggregation</span>
       </div>
-    </div>
 
-    <!-- Message 2: Trending trend (left) with mini chart suggestion -->
-    <div class="flex justify-start">
-      <div class="max-w-[85%] bubble-left px-4 py-3 telegram-shadow">
-        <div class="flex items-center gap-2 mb-1">
-          <span class="text-xs font-medium text-[#7ab7ef]">TREND DETECTOR</span>
-          <span class="signal-badge">📈 MOMENTUM</span>
-        </div>
-        <p class="text-sm leading-relaxed">
-          <span class="font-semibold">$ETH/USDT</span> breaking above 3,450 resistance.<br>
-          Volume spike +42% in 1H. Algorithmic score: <span class="text-[#4cd964] font-semibold">A+</span><br>
-          Watch for continuation to 3,620 – 3,700.
-        </p>
-        <div class="flex justify-end mt-1">
-          <span class="text-[10px] text-[#5f7389]">09:52</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Message 3: User (right) - hypothetical question / engagement -->
-    <div class="flex justify-end">
-      <div class="max-w-[85%] bubble-right px-4 py-3 telegram-shadow">
-        <p class="text-sm leading-relaxed">
-          🔥 Just entered BTC long at 63.4k. Thanks for the precise entry!
-        </p>
-        <div class="flex justify-end mt-1">
-          <span class="text-[10px] text-[#a0b8d0]">09:55</span>
-          <span class="text-[10px] text-[#a0b8d0] ml-1">✓✓</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Message 4: Bot reply (left) with profit update -->
-    <div class="flex justify-start">
-      <div class="max-w-[85%] bubble-left px-4 py-3 telegram-shadow">
-        <div class="flex items-center gap-2 mb-1">
-          <span class="text-xs font-medium text-[#7ab7ef]">AI SIGNAL BOT</span>
-          <span class="signal-badge">⚡ ALGO</span>
-        </div>
-        <p class="text-sm leading-relaxed">
-          Great! 🚀 Our algorithm just adjusted TP1 to <span class="font-mono">64,950</span> based on order flow.<br>
-          Trailing stop suggested at <span class="font-mono">63,800</span>.<br>
-          <span class="text-[#4cd964]">+1.2% unrealized</span> since entry.
-        </p>
-        <div class="flex justify-end mt-1">
-          <span class="text-[10px] text-[#5f7389]">10:02</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Message 5: Trend alert with card-like appearance -->
-    <div class="flex justify-start">
-      <div class="max-w-[85%] bubble-left px-4 py-3 telegram-shadow">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="text-xs font-medium text-[#7ab7ef]">TREND ALERT</span>
-          <span class="signal-badge">🧠 AI FORECAST</span>
-        </div>
-        <div class="bg-[#0f1a24] rounded-xl p-3 mb-1 border border-[#1e2f3f]">
-          <div class="flex justify-between items-center">
-            <span class="font-semibold text-sm">$SOL/USDT</span>
-            <span class="text-xs bg-[#1e3a5a] px-2 py-0.5 rounded-full">+8.4% 24h</span>
+      <!-- Aggregated Signal Card 1 (BLURRED) -->
+      <div class="feed-item agg-card p-4 telegram-shadow relative">
+        <!-- Card header with source -->
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="badge-agg">⚡ AI SIGNAL</span>
+            <span class="text-[10px] text-[#5f7389]">from 5 sources</span>
           </div>
-          <p class="text-xs text-[#b0c4d9] mt-1">Algorithmic breakout confirmed. Next resistance 178.40.</p>
+          <span class="text-[10px] text-[#5f7389]">just now</span>
         </div>
-        <p class="text-sm">Our models show <span class="font-semibold text-[#7ab7ef]">82% probability</span> of testing 180 within 48h.</p>
-        <div class="flex justify-end mt-1">
-          <span class="text-[10px] text-[#5f7389]">10:18</span>
+        <!-- Blurred content wrapper with lock overlay -->
+        <div class="relative">
+          <!-- Actual blurred signal content -->
+          <div class="blurred-signal">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-lg">BTC/USDT</span>
+              <span class="trend-up text-sm">+2.4% target</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-sm mb-2">
+              <div><span class="text-[#8e9eae]">Entry:</span> <span class="font-mono">63,420.50</span></div>
+              <div><span class="text-[#8e9eae]">Target 1:</span> <span class="font-mono trend-up">64,800</span></div>
+              <div><span class="text-[#8e9eae]">Target 2:</span> <span class="font-mono trend-up">66,200</span></div>
+              <div><span class="text-[#8e9eae]">Stop:</span> <span class="font-mono trend-down">62,150</span></div>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-[#8e9eae]">
+              <span>Confidence: 89%</span>
+              <span>R/R 1:2.3</span>
+              <span>Algo score: A+</span>
+            </div>
+          </div>
+          <!-- Lock overlay (sits on top, blurry content visible but obscured) -->
+          <div class="absolute inset-0 lock-overlay rounded-xl flex flex-col items-center justify-center p-4 text-center">
+            <span class="text-2xl mb-1">🔒</span>
+            <p class="text-sm font-semibold text-white">Premium Signal</p>
+            <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock this AI signal</p>
+            <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" 
+               class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
+              Activate Free Account →
+            </a>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Message 6: User right, engagement -->
-    <div class="flex justify-end">
-      <div class="max-w-[85%] bubble-right px-4 py-3 telegram-shadow">
-        <p class="text-sm leading-relaxed">
-          SOL signal printing 🔥 Already up 3% from your call. Keep them coming!
+      <!-- Aggregated Trend Card 2 (BLURRED) -->
+      <div class="feed-item agg-card p-4 telegram-shadow relative">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="badge-agg">📈 TREND AGGREGATOR</span>
+            <span class="text-[10px] text-[#5f7389]">from 8 sources</span>
+          </div>
+          <span class="text-[10px] text-[#5f7389]">2 min ago</span>
+        </div>
+        <div class="relative">
+          <div class="blurred-signal">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-lg">ETH/USDT</span>
+              <span class="trend-up text-sm">Momentum A+</span>
+            </div>
+            <p class="text-sm leading-relaxed">
+              Breaking above 3,450 resistance. Volume spike +42% in 1H. Algorithmic score: A+<br>
+              Watch continuation to <span class="font-mono">3,620 – 3,700</span>.
+            </p>
+            <div class="mt-2 flex gap-2 text-xs">
+              <span class="bg-[#0f2b42] px-2 py-0.5 rounded-full">RSI: 68</span>
+              <span class="bg-[#0f2b42] px-2 py-0.5 rounded-full">Vol: +42%</span>
+              <span class="bg-[#0f2b42] px-2 py-0.5 rounded-full">Score: 9.2</span>
+            </div>
+          </div>
+          <div class="absolute inset-0 lock-overlay rounded-xl flex flex-col items-center justify-center p-4 text-center">
+            <span class="text-2xl mb-1">🔒</span>
+            <p class="text-sm font-semibold text-white">Trend Preview Locked</p>
+            <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock this trend analysis</p>
+            <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" 
+               class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
+              Activate Free Account →
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unlocked example (left visible to show value) -->
+      <div class="feed-item agg-card p-4 telegram-shadow">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="badge-agg">📊 MARKET PULSE</span>
+            <span class="text-[10px] text-[#5f7389]">free preview</span>
+          </div>
+          <span class="text-[10px] text-[#5f7389]">5 min ago</span>
+        </div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-bold text-lg">SOL/USDT</span>
+          <span class="trend-up text-sm">+8.4% 24h</span>
+        </div>
+        <p class="text-sm leading-relaxed text-[#d0dfee]">
+          Algorithmic breakout confirmed. Next resistance <span class="font-mono">178.40</span>.<br>
+          <span class="text-[#7ab7ef]">82% probability</span> of testing 180 within 48h.
         </p>
-        <div class="flex justify-end mt-1">
-          <span class="text-[10px] text-[#a0b8d0]">10:21</span>
-          <span class="text-[10px] text-[#a0b8d0] ml-1">✓✓</span>
+        <div class="flex justify-end mt-2">
+          <span class="text-[10px] text-[#5f7389]">Aggregated from 6 sources</span>
         </div>
       </div>
-    </div>
 
-    <!-- Message 7: Algorithmic insight (left) -->
-    <div class="flex justify-start">
-      <div class="max-w-[85%] bubble-left px-4 py-3 telegram-shadow">
-        <div class="flex items-center gap-2 mb-1">
-          <span class="text-xs font-medium text-[#7ab7ef]">ALGO INSIGHT</span>
-          <span class="signal-badge">📊 VOLUME</span>
+      <!-- Locked Card 3 (BLURRED) -->
+      <div class="feed-item agg-card p-4 telegram-shadow relative">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="badge-agg">🧠 AI FORECAST</span>
+            <span class="text-[10px] text-[#5f7389]">from 4 sources</span>
+          </div>
+          <span class="text-[10px] text-[#5f7389]">8 min ago</span>
         </div>
-        <p class="text-sm leading-relaxed">
-          Unusual options activity detected on <span class="font-semibold">$LINK</span> – large call sweeps exp. next Friday.<br>
-          Implied volatility +18%. Historical pattern suggests 5-7% move.
-        </p>
-        <div class="flex justify-end mt-1">
-          <span class="text-[10px] text-[#5f7389]">10:32</span>
+        <div class="relative">
+          <div class="blurred-signal">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-lg">LINK/USDT</span>
+              <span class="trend-up text-sm">Volatility +18%</span>
+            </div>
+            <p class="text-sm leading-relaxed">
+              Unusual options activity – large call sweeps exp. next Friday.<br>
+              Implied volatility +18%. Historical pattern suggests 5-7% move.
+            </p>
+            <div class="mt-2 text-xs text-[#8e9eae]">
+              Key levels: 17.20 / 18.40 / 19.10
+            </div>
+          </div>
+          <div class="absolute inset-0 lock-overlay rounded-xl flex flex-col items-center justify-center p-4 text-center">
+            <span class="text-2xl mb-1">🔒</span>
+            <p class="text-sm font-semibold text-white">Forecast Locked</p>
+            <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock AI forecast</p>
+            <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" 
+               class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
+              Activate Free Account →
+            </a>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Typing indicator / subtle live feel -->
-    <div class="flex justify-start">
-      <div class="bubble-left px-4 py-2 telegram-shadow flex items-center gap-1">
-        <span class="text-xs text-[#8e9eae]">AI is typing</span>
-        <span class="flex gap-0.5">
-          <span class="w-1.5 h-1.5 bg-[#7ab7ef] rounded-full typing-dot"></span>
-          <span class="w-1.5 h-1.5 bg-[#7ab7ef] rounded-full typing-dot" style="animation-delay:0.2s"></span>
-          <span class="w-1.5 h-1.5 bg-[#7ab7ef] rounded-full typing-dot" style="animation-delay:0.4s"></span>
-        </span>
+      <!-- Locked Card 4 (BLURRED) -->
+      <div class="feed-item agg-card p-4 telegram-shadow relative">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="badge-agg">⚡ ALGO SIGNAL</span>
+            <span class="text-[10px] text-[#5f7389]">from 7 sources</span>
+          </div>
+          <span class="text-[10px] text-[#5f7389]">12 min ago</span>
+        </div>
+        <div class="relative">
+          <div class="blurred-signal">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-lg">AVAX/USDT</span>
+              <span class="trend-up text-sm">+4.2% target</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-sm mb-2">
+              <div><span class="text-[#8e9eae]">Entry:</span> <span class="font-mono">36.80</span></div>
+              <div><span class="text-[#8e9eae]">Target 1:</span> <span class="font-mono trend-up">38.20</span></div>
+              <div><span class="text-[#8e9eae]">Target 2:</span> <span class="font-mono trend-up">39.50</span></div>
+              <div><span class="text-[#8e9eae]">Stop:</span> <span class="font-mono trend-down">35.90</span></div>
+            </div>
+            <div class="text-xs text-[#8e9eae]">Confidence: 76% · R/R 1:2.8</div>
+          </div>
+          <div class="absolute inset-0 lock-overlay rounded-xl flex flex-col items-center justify-center p-4 text-center">
+            <span class="text-2xl mb-1">🔒</span>
+            <p class="text-sm font-semibold text-white">Signal Locked</p>
+            <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock this signal</p>
+            <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" 
+               class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
+              Activate Free Account →
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Locked Card 5 (BLURRED) -->
+      <div class="feed-item agg-card p-4 telegram-shadow relative">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="badge-agg">📉 TREND REVERSAL</span>
+            <span class="text-[10px] text-[#5f7389]">from 3 sources</span>
+          </div>
+          <span class="text-[10px] text-[#5f7389]">15 min ago</span>
+        </div>
+        <div class="relative">
+          <div class="blurred-signal">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-lg">XRP/USDT</span>
+              <span class="trend-down text-sm">-2.1% possible</span>
+            </div>
+            <p class="text-sm leading-relaxed">
+              Bearish divergence on 4H RSI. Aggregated short signal building.<br>
+              Watch for break below 0.62 support.
+            </p>
+          </div>
+          <div class="absolute inset-0 lock-overlay rounded-xl flex flex-col items-center justify-center p-4 text-center">
+            <span class="text-2xl mb-1">🔒</span>
+            <p class="text-sm font-semibold text-white">Reversal Signal Locked</p>
+            <p class="text-xs text-[#b0c4d9] mt-1 max-w-[200px]">Sign up with our partner to unlock</p>
+            <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" 
+               class="mt-3 bg-[#2b5278] hover:bg-[#376a9e] text-white text-xs font-semibold py-2 px-6 rounded-full cta-glow transition-all inline-block">
+              Activate Free Account →
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom note / aggregate status -->
+      <div class="flex justify-center pt-2 pb-6">
+        <div class="text-xs text-[#5f7389] flex items-center gap-2">
+          <span class="w-1.5 h-1.5 bg-[#4cd964] rounded-full animate-pulse"></span>
+          Aggregating from 24+ premium sources · Live updates
+        </div>
       </div>
     </div>
   </main>
 
-  <!-- Telegram-like input bar (static, not functional but looks real) -->
+  <!-- Telegram-style footer (input bar) with partner link emphasis -->
   <footer class="bg-[#17212b] border-t border-[#101921] px-3 py-2 flex items-center gap-2 shrink-0">
     <button class="text-[#7d8b99] text-2xl leading-none p-1">📎</button>
     <div class="flex-1 bg-[#0e1621] rounded-full px-4 py-2 text-sm text-[#7d8b99] flex items-center justify-between">
       <span>Message</span>
       <span class="text-xl">😊</span>
     </div>
-    <button class="bg-[#2b5278] rounded-full w-9 h-9 flex items-center justify-center text-white text-lg shadow-md">
-      ➤
-    </button>
+    <a href="https://partner.bybit.com/b/GRAMVIDEOS" target="_blank" 
+       class="bg-[#2b5278] hover:bg-[#376a9e] rounded-full px-3 py-2 text-white text-sm font-semibold shadow-md cta-glow transition-all flex items-center gap-1 whitespace-nowrap">
+      Sign up free →
+    </a>
   </footer>
 
-  <!-- Tiny script to simulate auto-scroll to bottom (chat feel) -->
+  <!-- Small interactive script to keep chat scroll position (optional) -->
   <script>
     (function() {
-      // Scroll to bottom of chat on load – like a real chat
-      const chat = document.getElementById('chatContainer');
-      if (chat) {
-        chat.scrollTop = chat.scrollHeight;
+      // Scroll to show top of the feed (not bottom, because it's aggregator style)
+      // Actually we want to start at the top for the feed, but it's fine.
+      // We'll just set scroll to top to show the first card.
+      const main = document.querySelector('main');
+      if (main) {
+        main.scrollTop = 0; // show top content first
       }
 
-      // Optional: make the "typing" indicator subtle lively (no extra dependencies)
-      // Just a tiny detail to feel alive – already done via CSS animation
-      // Also we could add a fake incoming signal after a few seconds, but static is fine.
-      // For demonstration, we'll just keep it static but with elegant details.
-
-      // small interactive touch: click on input bar shows a subtle effect (not needed but fun)
-      const fakeInput = document.querySelector('footer .flex-1');
-      if (fakeInput) {
-        fakeInput.addEventListener('click', () => {
-          // just a visual pulse, but we don't have real input
-          fakeInput.classList.add('ring-1', 'ring-[#2b5278]');
-          setTimeout(() => fakeInput.classList.remove('ring-1', 'ring-[#2b5278]'), 200);
+      // Add hover effect to lock overlay links to feel more interactive
+      const partnerLinks = document.querySelectorAll('a[href*="partner.bybit.com"]');
+      partnerLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          // Just a visual feedback, no need to prevent default
+          link.style.transform = 'scale(0.98)';
+          setTimeout(() => link.style.transform = 'scale(1)', 150);
         });
-      }
+      });
+
+      // Subtle: simulate live aggregation by updating the "just now" timestamp
+      // But not necessary, static is fine.
+      // Just for polish: animate the live dot already done via CSS.
     })();
   </script>
-
-  <!-- Additional small style for bubble tails (more authentic) -->
-  <style>
-    /* Tail simulation via pseudo elements – simpler: we already used border-radius.
-       But we can add a tiny triangle to bubble-left and bubble-right */
-    .bubble-left::before {
-      content: '';
-      position: absolute;
-      left: -6px;
-      bottom: 8px;
-      width: 12px;
-      height: 12px;
-      background: #182533;
-      clip-path: polygon(100% 0, 0 100%, 100% 100%);
-      transform: rotate(180deg);
-    }
-    .bubble-right::after {
-      content: '';
-      position: absolute;
-      right: -6px;
-      bottom: 8px;
-      width: 12px;
-      height: 12px;
-      background: #2b5278;
-      clip-path: polygon(100% 0, 0 100%, 100% 100%);
-      transform: rotate(180deg);
-    }
-    /* but we must ensure relative positioning is set */
-    .bubble-left, .bubble-right {
-      position: relative;
-    }
-    /* Adjust tail position for bubble-left/right */
-    .bubble-left::before {
-      left: -5px;
-      bottom: 8px;
-      background: #182533;
-    }
-    .bubble-right::after {
-      right: -5px;
-      bottom: 8px;
-      background: #2b5278;
-    }
-    /* avoid overflow issues */
-    .chat-scroll {
-      scroll-behavior: smooth;
-    }
-  </style>
-
-<!-- Default Statcounter code for Telegram
-http://telegam.1biz.online/ -->
-<script type="text/javascript">
-var sc_project=13355495; 
-var sc_invisible=1; 
-var sc_security="b8ba392c"; 
-</script>
-<script type="text/javascript"
-src="https://www.statcounter.com/counter/counter.js"
-async></script>
-<noscript><div class="statcounter"><a title="Web Analytics
-Made Easy - Statcounter" href="https://statcounter.com/"
-target="_blank"><img class="statcounter"
-src="https://c.statcounter.com/13355495/0/b8ba392c/1/"
-alt="Web Analytics Made Easy - Statcounter"
-referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
-<!-- End of Statcounter Code -->
-
 </body>
 </html>
